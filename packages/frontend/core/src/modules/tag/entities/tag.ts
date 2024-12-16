@@ -54,6 +54,10 @@ export class Tag extends Entity<{ id: string }> {
     });
   }
 
+  bulkTag(pageIds: string[]) {
+    pageIds.forEach(pageId => this.tag(pageId));
+  }
+
   untag(pageId: string) {
     const pageRecord = this.docs.list.doc$(pageId).value;
     if (!pageRecord) {
@@ -62,6 +66,10 @@ export class Tag extends Entity<{ id: string }> {
     pageRecord?.setMeta({
       tags: pageRecord.meta$.value.tags?.filter(tagId => tagId !== this.id),
     });
+  }
+
+  bulkUntag(pageIds: string[]) {
+    pageIds.forEach(pageId => this.untag(pageId));
   }
 
   /**

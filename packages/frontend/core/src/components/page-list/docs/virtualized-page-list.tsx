@@ -1,4 +1,4 @@
-import { toast, useConfirmModal } from '@affine/component';
+import { Modal, toast, useConfirmModal } from '@affine/component';
 import { useBlockSuiteDocMeta } from '@affine/core/components/hooks/use-block-suite-page-meta';
 import { CollectionService } from '@affine/core/modules/collection';
 import type { Tag } from '@affine/core/modules/tag';
@@ -8,6 +8,7 @@ import type { DocMeta } from '@blocksuite/affine/store';
 import { DocsService, useService, WorkspaceService } from '@toeverything/infra';
 import { useCallback, useMemo, useRef, useState } from 'react';
 
+import { TagsInlineEditor } from '../components/bulk-tags-inline-editor';
 import { ListFloatingToolbar } from '../components/list-floating-toolbar';
 import { usePageItemGroupDefinitions } from '../group-definitions';
 import { usePageHeaderColsDef } from '../header-col-def';
@@ -65,6 +66,7 @@ export const VirtualizedPageList = ({
   const listRef = useRef<ItemListHandle>(null);
   const [showFloatingToolbar, setShowFloatingToolbar] = useState(false);
   const [selectedPageIds, setSelectedPageIds] = useState<string[]>([]);
+  const [open, setOpen] = useState(false);
   const currentWorkspace = useService(WorkspaceService).workspace;
   const docsService = useService(DocsService);
   const pageMetas = useBlockSuiteDocMeta(currentWorkspace.docCollection);
@@ -160,6 +162,15 @@ export const VirtualizedPageList = ({
     t,
   ]);
 
+  const handleMultiSetTag = useCallback(() => {
+    if (filteredSelectedPageIds.length === 0) {
+      return;
+    }
+
+    setOpen(true);
+    hideFloatingToolbar();
+  }, [filteredSelectedPageIds, hideFloatingToolbar, openConfirmModal, t]);
+
   const group = usePageItemGroupDefinitions();
 
   return (
@@ -185,6 +196,7 @@ export const VirtualizedPageList = ({
       <ListFloatingToolbar
         open={showFloatingToolbar}
         onDelete={handleMultiDelete}
+        onSetTag={handleMultiSetTag}
         onClose={hideFloatingToolbar}
         content={
           <Trans
@@ -198,6 +210,21 @@ export const VirtualizedPageList = ({
           </Trans>
         }
       />
+      <Modal open={open} onOpenChange={setOpen}>
+        <h2
+          style={{
+            margin: '0 0 32px 0',
+          }}
+        >
+          Set {filteredSelectedPageIds.length} Documents Tags
+        </h2>
+        <TagsInlineEditor
+          placeholder={t[
+            'com.affine.page-properties.property-value-placeholder'
+          ]()}
+          pageIds={filteredSelectedPageIds}
+        />
+      </Modal>
     </>
   );
 };

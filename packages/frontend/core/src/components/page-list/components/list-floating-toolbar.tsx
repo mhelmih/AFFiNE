@@ -3,6 +3,7 @@ import {
   DeleteIcon,
   DeletePermanentlyIcon,
   ResetIcon,
+  TagIcon,
 } from '@blocksuite/icons/rc';
 import type { ReactNode } from 'react';
 
@@ -15,12 +16,14 @@ export const ListFloatingToolbar = ({
   open,
   onDelete,
   onRestore,
+  onSetTag,
 }: {
   open: boolean;
   content: ReactNode;
   onClose: () => void;
   onDelete?: () => void;
   onRestore?: () => void;
+  onSetTag?: () => void;
 }) => {
   return (
     <FloatingToolbar className={styles.floatingToolbar} open={open}>
@@ -40,6 +43,13 @@ export const ListFloatingToolbar = ({
           icon={onRestore ? <DeletePermanentlyIcon /> : <DeleteIcon />}
           type="danger"
           data-testid="list-toolbar-delete"
+        />
+      )}
+      {!!onSetTag && (
+        <FloatingToolbar.Button
+          onClick={onSetTag}
+          icon={<TagIcon />}
+          data-testid="list-toolbar-tag"
         />
       )}
     </FloatingToolbar>

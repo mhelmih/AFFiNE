@@ -50,6 +50,12 @@ export class TagList extends Entity {
     return this.tagsByPageId$(pageId).map(tags => tags.map(tag => tag.id));
   }
 
+  tagIdsByPageIds$(pageIds: string[]) {
+    return LiveData.computed(get => {
+      return pageIds.map(pageId => get(this.tagIdsByPageId$(pageId))).flat();
+    });
+  }
+
   tagByTagId$(tagId?: string) {
     return this.tags$.map(tags => tags.find(tag => tag.id === tagId));
   }
